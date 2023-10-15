@@ -1,0 +1,354 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+	<dict>
+		<key>Kind</key>
+		<string>Xcode.Xcode3.ProjectTemplateUnitKind</string>
+		<key>Identifier</key>
+		<string>com.artemtishchenko.unit.VIPER</string>
+		<key>Ancestors</key>
+		<array>
+			<string>com.artemtishchenko.unit.cocoaTouchApplicationBase</string>
+			<string>com.apple.dt.unit.languageChoice</string>
+		</array>
+		<key>Concrete</key>
+		<true/>
+		<key>Description</key>
+		<string>This template provides a starting point for an SwiftUI application that uses a &quot;VIPER&quot; Architecture.</string>
+		<key>SortOrder</key>
+		<integer>1</integer>
+		<key>Options</key>
+		<array>
+			<dict>
+				<key>Identifier</key>
+				<string>languageChoice</string>
+				<key>Units</key>
+				<dict>
+					<key>Swift</key>
+					<dict>
+						<key>Nodes</key>
+						<array>
+						<string>RootApp.swift</string>
+						<string>RootView.swift</string>
+					 	<string>ApplicationViewBuilder.swift</string>
+						
+						<string>Classes/Architecture/InteractorProtocol.swift</string>
+						<string>Classes/Architecture/PresenterProtocol.swift</string>
+						<string>Classes/Architecture/RouterProtocol.swift</string>
+						<string>Classes/Architecture/ViewStateProtocol.swift</string>
+						
+						<string>Classes/Modules/Main/Contracts/MainContracts.swift</string>
+						<string>Classes/Modules/Main/Assembly/MainAssembly.swift</string>
+						<string>Classes/Modules/Main/View/MainView.swift</string>
+						<string>Classes/Modules/Main/ViewState/MainViewState.swift</string>
+						<string>Classes/Modules/Main/Interactor/MainInteractor.swift</string>
+						<string>Classes/Modules/Main/Presenter/MainPresenter.swift</string>
+						<string>Classes/Modules/Main/Router/MainRouter.swift</string>
+					
+						<string>Classes/Services/NavigationService/NavigationAssembly.swift</string>
+						<string>Classes/Services/NavigationService/NavigationServiceType.swift</string>
+						<string>Classes/Services/NavigationService/NavigationService.swift</string>
+					
+						<string>Classes/Library/Swilby/Assembly.swift</string>
+						<string>Classes/Library/Swilby/AssemblyFactory.swift</string>
+						<string>Classes/Library/Swilby/DependencyContainer.swift</string>
+						<string>Classes/Library/Swilby/ObjectKey.swift</string>
+						<string>Classes/Library/Swilby/StrongBox.swift</string>
+						<string>Classes/Library/Swilby/WeakBox.swift</string>
+						<string>Classes/Library/Swilby/WeakContainer.swift</string>
+						</array>
+					</dict>
+				</dict>
+			</dict>
+		</array>
+		<key>Definitions</key>
+		<dict>
+
+<!--RootApp-->
+			<key>RootApp.swift</key>
+			<dict>
+				<key>Path</key>
+				<string>RootApp.swift</string>
+			</dict>
+<!--END:RootApp-->
+
+<!--RootView-->
+			<key>RootView.swift</key>
+			<dict>
+				<key>Path</key>
+				<string>RootView.swift</string>
+			</dict>
+<!--END:RootView-->
+
+<!--ApplicationViewBuilder-->
+			<key>ApplicationViewBuilder.swift</key>
+			<dict>
+				<key>Path</key>
+				<string>ApplicationViewBuilder.swift</string>
+			</dict>
+<!--ApplicationViewBuilder-->
+
+<!--NavigationService-->
+			<key>Classes/Services/NavigationService/NavigationAssembly.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Services</string>
+					<string>NavigationService</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Services/NavigationService/NavigationAssembly.swift</string>
+			</dict>
+
+			<key>Classes/Services/NavigationService/NavigationServiceType.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Services</string>
+					<string>NavigationService</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Services/NavigationService/NavigationServiceType.swift</string>
+			</dict>
+
+			<key>Classes/Services/NavigationService/NavigationService.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Services</string>
+					<string>NavigationService</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Services/NavigationService/NavigationService.swift</string>
+			</dict>
+<!--END:NavigationService-->
+
+<!--Architecture-->
+			<key>Classes/Architecture/InteractorProtocol.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Architecture</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Architecture/InteractorProtocol.swift</string>
+			</dict>
+
+			<key>Classes/Architecture/ViewStateProtocol.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Architecture</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Architecture/ViewStateProtocol.swift</string>
+			</dict>
+
+			<key>Classes/Architecture/RouterProtocol.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Architecture</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Architecture/RouterProtocol.swift</string>
+			</dict>
+
+			<key>Classes/Architecture/PresenterProtocol.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Architecture</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Architecture/PresenterProtocol.swift</string>
+			</dict>
+
+<!--END:Architecture-->
+
+<!--MainModule-->
+			<key>Classes/Modules/Main/Contracts/MainContracts.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Modules</string>
+					<string>Main</string>
+					<string>Contracts</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Modules/Main/Contracts/MainContracts.swift</string>
+			</dict>
+
+			<key>Classes/Modules/Main/Assembly/MainAssembly.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Modules</string>
+					<string>Main</string>
+					<string>Assembly</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Modules/Main/Assembly/MainAssembly.swift</string>
+			</dict>
+
+			<key>Classes/Modules/Main/View/MainView.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Modules</string>
+					<string>Main</string>
+					<string>View</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Modules/Main/View/MainView.swift</string>
+			</dict>
+
+			<key>Classes/Modules/Main/ViewState/MainViewState.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Modules</string>
+					<string>Main</string>
+					<string>ViewState</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Modules/Main/ViewState/MainViewState.swift</string>
+			</dict>
+
+			<key>Classes/Modules/Main/Interactor/MainInteractor.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Modules</string>
+					<string>Main</string>
+					<string>Interactor</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Modules/Main/Interactor/MainInteractor.swift</string>
+			</dict>
+
+			<key>Classes/Modules/Main/Presenter/MainPresenter.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Modules</string>
+					<string>Main</string>
+					<string>Presenter</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Modules/Main/Presenter/MainPresenter.swift</string>
+			</dict>
+
+			<key>Classes/Modules/Main/Router/MainRouter.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Modules</string>
+					<string>Main</string>
+					<string>Router</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Modules/Main/Router/MainRouter.swift</string>
+			</dict>
+<!--END: MainModule-->
+
+<!--Swilby-->
+			<key>Classes/Library/Swilby/Assembly.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Library</string>
+					<string>Swilby</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Library/Swilby/Assembly.swift</string>
+			</dict>
+
+
+			<key>Classes/Library/Swilby/AssemblyFactory.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Library</string>
+					<string>Swilby</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Library/Swilby/AssemblyFactory.swift</string>
+			</dict>
+
+			<key>Classes/Library/Swilby/DependencyContainer.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Library</string>
+					<string>Swilby</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Library/Swilby/DependencyContainer.swift</string>
+			</dict>
+			<key>Classes/Library/Swilby/ObjectKey.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Library</string>
+					<string>Swilby</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Library/Swilby/ObjectKey.swift</string>
+			</dict>
+			<key>Classes/Library/Swilby/StrongBox.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Library</string>
+					<string>Swilby</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Library/Swilby/StrongBox.swift</string>
+			</dict>
+			<key>Classes/Library/Swilby/WeakBox.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Library</string>
+					<string>Swilby</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Library/Swilby/WeakBox.swift</string>
+			</dict>
+			<key>Classes/Library/Swilby/WeakContainer.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Library</string>
+					<string>Swilby</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Library/Swilby/WeakContainer.swift</string>
+			</dict>
+<!--END Swilby-->
+
+		</dict>
+	</dict>
+</plist>
