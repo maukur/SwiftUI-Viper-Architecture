@@ -77,8 +77,8 @@ swift install.swift
 
 ## Requirements
 
-* Xcode 10+
-* Swift 4.2+
+* Xcode 14+
+* Swift 5.7+
 
 ## Example project
 
@@ -92,7 +92,7 @@ swift install.swift
 ```swift
 Open Xcode
 File > New > Project or press shortcuts ⇧⌘N
-Choice VIPER Architecture
+Select VIPER Architecture
 Profit! 🎉
 ```
 #### Project structure
@@ -151,7 +151,7 @@ Open Xcode Project
 Select Modules in Xcode Project Navigator
 Create new file
 File > New > File... or press shortcuts ⌘N
-Choice Module or Service
+Select Module or Service
 Enter Name
 After you have created a Module you need to remove the reference on the folder
 Highlight the Folder in the Xcode Project Navigator
@@ -198,7 +198,7 @@ Open Xcode Project
 Select Services in Xcode Project Navigator
 Create new file
 File > New > File... or press shortcuts ⌘N
-Choice Module or Service
+Select Module or Service
 Enter Name (if you want to create "Service" you must specify at the end of the name "Service" for example - NetworkService or SettingsService)
 After you have created a Service you need to remove the reference on the folder
 Highlight the Folder in the Xcode Project Navigator
@@ -264,3 +264,14 @@ BASED ON: [Core iOS Application Architecture](https://github.com/bartleby/Core-i
 * Artem Korenev - [LinkedIn](https://www.linkedin.com/in/artem-korenev-42b320243/)
 * Aleksei Artemev - [iDevs.io](https://idevs.io)
 * CustomerTimes iOS team - [Customertimes.com](https://customertimes.com/)
+
+## ☕️ Donate:
+If you find this repository useful, you can thank me
+
+[![](https://img.shields.io/badge/-Buy%20me%20a%20coffee-EDD347?logo=ko-fi)](https://www.buymeacoffee.com/x68mf5jw4yl) 
+
+Or give a star the repository
+
+[![](https://img.shields.io/badge/Star_on-GitHub-lightgrey.svg)](https://github.com/maukur/SwiftUI-Viper-Architecture)<br>
+
+
