@@ -8,7 +8,6 @@
 
 import SwiftUI
 
-@MainActor
 final class ApplicationViewBuilder : Assembly, ObservableObject {
     
     required init(container: Container) {
