@@ -11,7 +11,7 @@ import SwiftUI
 final class MainPresenter: MainPresenterProtocol {
     
     private let router: MainRouterProtocol
-    private let viewState: MainViewStateProtocol
+    private weak var viewState: MainViewStateProtocol?
     private let interactor: MainInteractorProtocol
     
     init(router: MainRouterProtocol,
