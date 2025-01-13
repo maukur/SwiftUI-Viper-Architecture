@@ -9,7 +9,7 @@
 import SwiftUI
 
 @main
-class RootApp: App {
+struct RootApp: App {
     
     @ObservedObject var appViewBuilder: ApplicationViewBuilder
     @ObservedObject var navigationService: NavigationService
@@ -27,7 +27,7 @@ class RootApp: App {
         return container
     }()
 
-    required init() {
+    init() {
         navigationService = container.resolve(NavigationAssembly.self).build() as! NavigationService
         
         appViewBuilder = ApplicationViewBuilder(container: container)
