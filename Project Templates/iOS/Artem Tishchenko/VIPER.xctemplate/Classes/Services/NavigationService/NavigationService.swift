@@ -18,13 +18,16 @@ public class NavigationService: NavigationServiceType  {
     }
     
     @Published var modalView: Views?
+    @Published var popupView: Views?
     @Published var items: [Views] = []
     @Published var alert: CustomAlert?
 }
 
 
-enum Views: Equatable, Hashable {
-    
+enum Views: Identifiable, Equatable, Hashable {
+
+    var id: String { stringKey }
+
     static func == (lhs: Views, rhs: Views) -> Bool {
         lhs.stringKey == rhs.stringKey
     }
@@ -43,23 +46,6 @@ enum Views: Equatable, Hashable {
     }
 }
 
-
-class StubNavigation: NavigationServiceType, ObservableObject, Equatable  {
-    @Published var modalView: Views?
-    @Published var alert: CustomAlert?
-    
-    public let id = UUID()
-    
-    public static func == (lhs: StubNavigation, rhs: StubNavigation) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    fileprivate init() {}
-    
-    static var stub: any NavigationServiceType { NavigationService() }
-    
-    @Published var items: [Views] = []
-}
 
 enum CustomAlert: Equatable, Hashable {
     static func == (lhs: CustomAlert, rhs: CustomAlert) -> Bool {

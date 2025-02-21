@@ -23,13 +23,12 @@ struct RootView: View {
                     }
                 }
         }
-        .fullScreenCover(isPresented: .constant($navigationService.modalView.wrappedValue != nil)) {
-            if let modal = navigationService.modalView {
-                switch modal {
-                default:
-                    fatalError()
-                }
-            }
+        .fullScreenCover(item: $navigationService.popupView) { item in
+            appViewBuilder.build(view: item)
+                .presentationBackground(.clear)
+        }
+        .fullScreenCover(item: $navigationService.modalView) { item in
+            appViewBuilder.build(view: item)
         }
         .alert(isPresented: .constant($navigationService.alert.wrappedValue != nil)) {
             switch navigationService.alert {
