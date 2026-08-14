@@ -16,8 +16,6 @@ struct ___VARIABLE_moduleName___View: View {
     }
 }
 
-// Once the module is registered in `Views` and `ApplicationViewBuilder`,
-// the preview can be switched to `ApplicationViewBuilder.stub.build(view:)`.
 #Preview {
-    ___VARIABLE_moduleName___Assembly(container: RootApp().container).build()
+    ApplicationViewBuilder.stub.build(module: .___VARIABLE_moduleName___)
 }

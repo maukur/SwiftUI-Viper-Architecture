@@ -110,6 +110,8 @@ Profit! 🎉
      │       │   └── MainContracts.swift
      │       ├── Interactor
      │       │   └── MainInteractor.swift
+     │       ├── Module
+     │       │   └── MainModule.swift
      │       ├── Presenter
      │       │   └── MainPresenter.swift
      │       ├── Router
@@ -127,7 +129,9 @@ Profit! 🎉
      │   ├── InteractorProtocol.swift
      │   ├── PresenterProtocol.swift
      │   ├── RouterProtocol.swift
-     │   └── ViewStateProtocol.swift   
+     │   ├── ViewStateProtocol.swift
+     │   ├── Module.swift
+     │   └── AnyModule.swift
      └── Library
          └── Swilby
              ├── Assembly.swift
@@ -173,17 +177,26 @@ All your modules should be in the "Modules" folder along the path "Classes/Assem
 ┌── Assembly
 ├── Contracts
 ├── Interactor
+├── Module
 ├── Presenter
 ├── Router
 ├── View
 └── ViewState
 ```
 #### Setup Modules
-Important! You need to add your Service, Module to the DI Container in the RootApp.swift
+Nothing to set up: `Module/<Name>Module.swift` is the screen's entry point, and routers
+navigate to it right away.
 
 ```swift
-container.apply(MainAssembly.self)
-// add your module here
+navigation.push(.Profile)
+```
+
+An assembly that was never applied resolves to itself, so `container.apply( _:)` in
+RootApp.swift is only needed when you want to substitute an implementation, for tests
+or previews:
+
+```swift
+container.apply(MockProfileAssembly.self)
 ```
 
 ### Create a new Service
@@ -222,11 +235,12 @@ You can learn more about the principle of developing SoA from [wikipedia](https:
 └── ServiceImplementation
 ```
 #### Setup Services
-Important! You need to add your Service, Module to the DI Container in the RootApp.swift
+A service is ready as soon as its assembly exists — modules reach it through
+`container.resolve(NetworkAssembly.self).build()`. Register it in RootApp.swift only to
+swap the implementation:
 
 ```swift
-container.apply(NavigationServiceAssembly.self)
-// add your service here
+container.apply(MockNetworkAssembly.self)
 ```
 
 # Navigation and Parameter Passing in SwiftUI VIPER Architecture
@@ -235,9 +249,10 @@ This document provides examples of how to implement navigation between modules a
 
 ## Table of Contents
 - [Navigation Overview](#navigation-overview)
-- [Module Enum Definition](#module-enum-definition)
+- [Module Definition](#module-definition)
+- [Source Type Definitions](#source-type-definitions)
 - [Router Implementation](#router-implementation)
-- [ApplicationViewBuilder for Module Creation](#applicationviewbuilder-for-module-creation)
+- [ApplicationViewBuilder](#applicationviewbuilder)
 - [Assembly with Parameters](#assembly-with-parameters)
 - [RootView Setup](#rootview-setup)
 - [Navigation Types](#navigation-types)
@@ -246,69 +261,114 @@ This document provides examples of how to implement navigation between modules a
 ## Navigation Overview
 
 The VIPER architecture in SwiftUI uses a centralized navigation system where:
-- **NavigationService** manages navigation state
+- **Module** is a value declared by the screen itself that knows how to build it
+- **AnyModule** is the type-erased form the navigation service stores
+- **NavigationService** manages navigation state — stack, modal, popup and alert
 - **Router** handles navigation logic for each module
-- **ApplicationViewBuilder** creates module instances with parameters
 - **Assembly** configures modules with dependencies and parameters
 
-## Module Enum Definition
+A new screen brings its own module value, so adding one changes no shared file: no
+enum to extend, no `switch` to keep in sync, no registration to forget. The compiler
+enforces the contract — a module that does not say how it is built does not conform to
+`Module`.
 
-First, define an enum that represents all possible modules in your application with their parameters:
+## Module Definition
+
+Each screen declares its entry point in its own `Module` folder. The Xcode module
+template generates one for you:
 
 ```swift
-enum Module: Identifiable, Equatable, Hashable {
-    var id: String { stringKey }
-    
-    static func == (lhs: Module, rhs: Module) -> Bool {
-        lhs.stringKey == rhs.stringKey
+// Simple module without parameters
+struct ProfileModule: Module {
+    func build(container: Container) -> some View {
+        container.resolve(ProfileAssembly.self).build()
     }
-    
+}
+
+// Puts the module into code completion: navigation.push(.Profile)
+extension Module where Self == ProfileModule {
+    static var Profile: Self { Self() }
+}
+```
+
+The extension is what brings back the enum feel: type a dot in any navigation call and
+Xcode lists every module in the project. The template generates it for you, so a new
+screen shows up in completion the moment it is created.
+
+Parameters are stored properties, so they stay type checked all the way from the router
+to the assembly:
+
+```swift
+// Module with a data parameter
+struct DetailsModule: Module {
+    let source: DetailsSource
+
+    func build(container: Container) -> some View {
+        container.resolve(DetailsAssembly.self).build(source: source)
+    }
+}
+
+// Parameters turn the property into a function: navigation.push(.Details(source: .deepLink))
+extension Module where Self == DetailsModule {
+    static func Details(source: DetailsSource) -> Self { Self(source: source) }
+}
+
+// Module with multiple parameters
+struct GameModule: Module {
+    let source: GameSource
+    let difficulty: GameDifficulty
+
+    func build(container: Container) -> some View {
+        container.resolve(GameAssembly.self).build(source: source, difficulty: difficulty)
+    }
+}
+
+extension Module where Self == GameModule {
+    static func Game(source: GameSource, difficulty: GameDifficulty) -> Self {
+        Self(source: source, difficulty: difficulty)
+    }
+}
+
+// Module with a default value
+struct ListModule: Module {
+    let source: ListSource
+
+    init(source: ListSource = .normal) {
+        self.source = source
+    }
+
+    func build(container: Container) -> some View {
+        container.resolve(ListAssembly.self).build(source: source)
+    }
+}
+
+extension Module where Self == ListModule {
+    static func List(source: ListSource = .normal) -> Self { Self(source: source) }
+}
+```
+
+`Module` inherits `Hashable`, which SwiftUI needs to drive the navigation stack. For a
+module carrying a closure the conformance cannot be synthesized — closures have no
+identity — so spell it out:
+
+```swift
+struct ConfirmationModule: Module {
+    let completed: (() -> Void)?
+
+    // Identity is the module itself: two confirmations are the same destination
+    static func == (lhs: Self, rhs: Self) -> Bool { true }
+
     func hash(into hasher: inout Hasher) {
-        hasher.combine(self.stringKey)
+        hasher.combine("Confirmation")
     }
-    
-    // Simple modules without parameters
-    case Main
-    case Settings
-    case Profile
-    
-    // Modules with data parameters
-    case Details(source: DetailsSource)
-    case List(source: ListSource = .normal)
-    case Edit(itemId: String)
-    
-    // Modules with completion handlers
-    case Confirmation(completed: (() -> Void)?)
-    case Setup(didFinish: (() -> Void)?)
-    
-    // Modules with multiple parameters
-    case Game(source: GameSource, difficulty: GameDifficulty)
-    case Report(data: ReportData, onSave: ((Bool) -> Void)?)
-    
-    var stringKey: String {
-        switch self {
-        case .Main:
-            return "Main"
-        case .Settings:
-            return "Settings"
-        case .Profile:
-            return "Profile"
-        case .Details:
-            return "Details"
-        case .List:
-            return "List"
-        case .Edit:
-            return "Edit"
-        case .Confirmation:
-            return "Confirmation"
-        case .Setup:
-            return "Setup"
-        case .Game:
-            return "Game"
-        case .Report:
-            return "Report"
-        }
+
+    func build(container: Container) -> some View {
+        container.resolve(ConfirmationAssembly.self).build(completed: completed)
     }
+}
+
+extension Module where Self == ConfirmationModule {
+    static func Confirmation(completed: (() -> Void)?) -> Self { Self(completed: completed) }
 }
 ```
 
@@ -341,56 +401,19 @@ enum GameDifficulty {
     case hard
 }
 
-struct ReportData {
+struct ReportData: Hashable {
     let title: String
     let content: String
     let timestamp: Date
 }
-
-enum NavigationAlert: Identifiable, Equatable, Hashable {
-    var id: Int { hashValue }
-    
-    static func == (lhs: NavigationAlert, rhs: NavigationAlert) -> Bool {
-        lhs.hashValue == rhs.hashValue
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        switch self {
-        case .deleteConfirmation:
-            hasher.combine("deleteConfirmation")
-        case .networkError:
-            hasher.combine("networkError")
-        }
-    }
-    
-    case deleteConfirmation(yesAction: (() -> Void)?, noAction: (() -> Void)?)
-    case networkError(retryAction: (() -> Void)?)
-}
-
-protocol NavigationServiceType: ObservableObject, Identifiable {
-    var popup: Module? { get set }
-    var items: [Module] { get set }
-    var alert: NavigationAlert? { get set }
-    var fullScreen: Module? { get set }
-}
-
-public final class NavigationService: NavigationServiceType {
-    public let id = UUID()
-    
-    public static func == (lhs: NavigationService, rhs: NavigationService) -> Bool {
-        lhs.id == rhs.id
-    }
-    
-    @Published var fullScreen: Module?
-    @Published var popup: Module?
-    @Published var items: [Module] = []
-    @Published var alert: NavigationAlert?
-}
 ```
+
+Types used inside a module have to be `Hashable` too, which the compiler will tell you
+the moment they are not.
 
 ## Router Implementation
 
-Each module has its own router that uses the routing service to navigate:
+Each module has its own router that uses the navigation service to navigate:
 
 ```swift
 protocol MainRouterProtocol: RouterProtocol {
@@ -401,121 +424,85 @@ protocol MainRouterProtocol: RouterProtocol {
 }
 
 final class MainRouter: MainRouterProtocol {
-    var navigationService: any NavigationServiceType
-    
-    init(navigationService: any NavigationServiceType) {
-        self.navigationService = navigationService
+    var navigation: any NavigationServiceType
+
+    init(navigation: any NavigationServiceType) {
+        self.navigation = navigation
     }
-    
+
     // Stack navigation (push)
     func navigateToDetails(source: DetailsSource) {
-        navigationService.items.append(.Details(source: source))
+        navigation.push(.Details(source: source))
     }
-    
+
     func navigateToSettings() {
-        navigationService.items.append(.Settings)
+        navigation.push(.Settings)
     }
-    
+
     func navigateToProfile() {
-        navigationService.items.append(.Profile)
+        navigation.push(.Profile)
     }
-    
+
     // Full screen presentation
     func showConfirmation(completed: (() -> Void)?) {
-        navigationService.fullScreen = .Confirmation(completed: completed)
+        navigation.present(modal: .Confirmation(completed: completed))
     }
-    
+
     // Popup presentation
     func showSetup(didFinish: (() -> Void)?) {
-        navigationService.popup = .Setup(didFinish: didFinish)
+        navigation.present(popup: .Setup(didFinish: didFinish))
     }
-    
-    // Alert presentation  
+
+    // Alert presentation
     func showDeleteAlert(onConfirm: (() -> Void)?, onCancel: (() -> Void)?) {
-        navigationService.alert = .deleteConfirmation(yesAction: onConfirm, noAction: onCancel)
+        navigation.alert = .defaultAlert(yesAction: onConfirm, noAction: onCancel)
     }
-    
+
     // Navigation with complex parameters
     func navigateToGame(source: GameSource, difficulty: GameDifficulty) {
-        navigationService.items.append(.Game(source: source, difficulty: difficulty))
+        navigation.push(.Game(source: source, difficulty: difficulty))
     }
-    
+
     // Navigate back (remove from stack)
     func navigateBack() {
-        if !navigationService.items.isEmpty {
-            navigationService.items.removeLast()
-        }
+        navigation.pop()
     }
-    
+
     // Navigate to root (clear stack)
     func navigateToRoot() {
-        navigationService.items.removeAll()
+        navigation.popToRoot()
     }
 }
 ```
 
-## ApplicationViewBuilder for Module Creation
+## ApplicationViewBuilder
 
-The ApplicationViewBuilder creates module instances based on the enum cases:
+The builder turns a module into a view against the application container. It holds no
+per-screen knowledge, so it never has to be edited:
 
 ```swift
 final class ApplicationViewBuilder: Assembly, ObservableObject {
-    
     required init(container: Container) {
         super.init(container: container)
     }
-    
+
     @ViewBuilder
-    func build(view: Module) -> some View {
-        switch view {
-        case .Main:
-            buildMainModule()
-        case .Settings:
-            buildSettingsModule()
-        case .Profile:
-            buildProfileModule()
-        case .Details(let source):
-            buildDetailsModule(source: source)
-        case .List(let source):
-            buildListModule(source: source)
-        case .Edit(let itemId):
-            buildEditModule(itemId: itemId)
-        case .Confirmation(let completed):
-            buildConfirmationModule(completed: completed)
-        case .Setup(let didFinish):
-            buildSetupModule(didFinish: didFinish)
-        case .Game(let source, let difficulty):
-            buildGameModule(source: source, difficulty: difficulty)
-        case .Report(let data, let onSave):
-            buildReportModule(data: data, onSave: onSave)
-        }
+    func build(module: some Module) -> some View {
+        module.build(container: container)
     }
-    
-    // Private builder methods
+
     @ViewBuilder
-    private func buildMainModule() -> some View {
-        container.resolve(MainAssembly.self).build()
+    func build(module: AnyModule) -> some View {
+        module.build(container: container)
     }
-    
-    @ViewBuilder
-    private func buildDetailsModule(source: DetailsSource) -> some View {
-        container.resolve(DetailsAssembly.self).build(source: source)
-    }
-    
-    @ViewBuilder
-    private func buildGameModule(source: GameSource, difficulty: GameDifficulty) -> some View {
-        container.resolve(GameAssembly.self).build(source: source, difficulty: difficulty)
-    }
-    
-    @ViewBuilder
-    private func buildConfirmationModule(completed: (() -> Void)?) -> some View {
-        container.resolve(ConfirmationAssembly.self).build(completed: completed)
-    }
-    
-    @ViewBuilder
-    private func buildReportModule(data: ReportData, onSave: ((Bool) -> Void)?) -> some View {
-        container.resolve(ReportAssembly.self).build(data: data, onSave: onSave)
-    }
+}
+```
+
+That also makes it the entry point for previews of any screen in the app:
+
+```swift
+#Preview {
+    ApplicationViewBuilder.stub.build(module: .Details(source: .mainScreen))
 }
 ```
 
@@ -527,16 +514,16 @@ Module assemblies handle dependency injection and parameter passing:
 // Simple assembly without parameters
 final class MainAssembly: Assembly {
     func build() -> some View {
-        let navigationService = container.resolve(NavigationAssembly.self).build()
+        let navigation = container.resolve(NavigationAssembly.self).build()
         let dataService = container.resolve(DataServiceAssembly.self).build()
-        
-        let router = MainRouter(navigationService: navigationService)
+
+        let router = MainRouter(navigation: navigation)
         let interactor = MainInteractor(dataService: dataService)
         let viewState = MainViewState()
         let presenter = MainPresenter(router: router, interactor: interactor, viewState: viewState)
-        
+
         viewState.set(with: presenter)
-        
+
         return MainView(viewState: viewState)
     }
 }
@@ -544,11 +531,11 @@ final class MainAssembly: Assembly {
 // Assembly with source parameter
 final class DetailsAssembly: Assembly {
     func build(source: DetailsSource) -> some View {
-        let navigationService = container.resolve(NavigationAssembly.self).build()
+        let navigation = container.resolve(NavigationAssembly.self).build()
         let dataService = container.resolve(DataServiceAssembly.self).build()
         let analyticsService = container.resolve(AnalyticsServiceAssembly.self).build()
-        
-        let router = DetailsRouter(navigationService: navigationService)
+
+        let router = DetailsRouter(navigation: navigation)
         let interactor = DetailsInteractor(
             dataService: dataService,
             analyticsService: analyticsService,
@@ -561,9 +548,9 @@ final class DetailsAssembly: Assembly {
             viewState: viewState,
             source: source
         )
-        
+
         viewState.set(with: presenter)
-        
+
         return DetailsView(viewState: viewState)
     }
 }
@@ -571,11 +558,11 @@ final class DetailsAssembly: Assembly {
 // Assembly with multiple parameters
 final class GameAssembly: Assembly {
     func build(source: GameSource, difficulty: GameDifficulty) -> some View {
-        let navigationService = container.resolve(NavigationAssembly.self).build()
+        let navigation = container.resolve(NavigationAssembly.self).build()
         let gameService = container.resolve(GameServiceAssembly.self).build()
         let scoreService = container.resolve(ScoreServiceAssembly.self).build()
-        
-        let router = GameRouter(navigationService: navigationService)
+
+        let router = GameRouter(navigation: navigation)
         let interactor = GameInteractor(
             gameService: gameService,
             scoreService: scoreService,
@@ -590,9 +577,9 @@ final class GameAssembly: Assembly {
             source: source,
             difficulty: difficulty
         )
-        
+
         viewState.set(with: presenter)
-        
+
         return GameView(viewState: viewState)
     }
 }
@@ -600,9 +587,9 @@ final class GameAssembly: Assembly {
 // Assembly with completion handler
 final class ConfirmationAssembly: Assembly {
     func build(completed: (() -> Void)?) -> some View {
-        let navigationService = container.resolve(NavigationAssembly.self).build()
-        
-        let router = ConfirmationRouter(navigationService: navigationService)
+        let navigation = container.resolve(NavigationAssembly.self).build()
+
+        let router = ConfirmationRouter(navigation: navigation)
         let interactor = ConfirmationInteractor(completed: completed)
         let viewState = ConfirmationViewState()
         let presenter = ConfirmationPresenter(
@@ -610,9 +597,9 @@ final class ConfirmationAssembly: Assembly {
             interactor: interactor,
             viewState: viewState
         )
-        
+
         viewState.set(with: presenter)
-        
+
         return ConfirmationView(viewState: viewState)
     }
 }
@@ -625,94 +612,85 @@ The RootView manages different presentation styles:
 ```swift
 struct RootView: View {
     @ObservedObject var navigationService: NavigationService
-    @ObservedObject var applicationViewBuilder: ApplicationViewBuilder
-    
+    @ObservedObject var appViewBuilder: ApplicationViewBuilder
+
     var body: some View {
         NavigationStack(path: $navigationService.items) {
-            applicationViewBuilder.build(view: .Main)
-                .navigationDestination(for: Module.self) { module in
-                    applicationViewBuilder.build(view: module)
+            appViewBuilder.build(module: .Main)
+                .navigationDestination(for: AnyModule.self) { module in
+                    appViewBuilder.build(module: module)
                 }
         }
-        .fullScreenCover(item: $navigationService.popup) { module in
-            applicationViewBuilder.build(view: module)
+        .fullScreenCover(item: $navigationService.popupView) { module in
+            appViewBuilder.build(module: module)
                 .presentationBackground(.clear)
         }
-        .fullScreenCover(item: $navigationService.fullScreen) { module in
-            applicationViewBuilder.build(view: module)
+        .fullScreenCover(item: $navigationService.modalView) { module in
+            appViewBuilder.build(module: module)
         }
-        .alert(item: $navigationService.alert) { alertType in
-            buildAlert(for: alertType)
-        }
-    }
-    
-    private func buildAlert(for alertType: NavigationAlert) -> Alert {
-        switch alertType {
-        case .deleteConfirmation(let yesAction, let noAction):
-            return Alert(
-                title: Text("Delete Item"),
-                message: Text("Are you sure you want to delete this item?"),
-                primaryButton: .destructive(Text("Delete"), action: yesAction),
-                secondaryButton: .cancel(Text("Cancel"), action: noAction)
-            )
-        case .networkError(let retryAction):
-            return Alert(
-                title: Text("Network Error"),
-                message: Text("Please check your connection and try again."),
-                primaryButton: .default(Text("Retry"), action: retryAction),
-                secondaryButton: .cancel()
-            )
+        .alert(isPresented: .constant(navigationService.alert != nil)) {
+            switch navigationService.alert {
+            case let .defaultAlert(yesAction, noAction):
+                return Alert(title: Text("Title"),
+                             primaryButton: .default(Text("Yes"), action: yesAction),
+                             secondaryButton: .destructive(Text("No"), action: noAction))
+            case .none:
+                fatalError()
+            }
         }
     }
 }
 ```
+
+Only the root screen is named here. Every other destination arrives as an `AnyModule`
+that already knows how to build itself.
 
 ## Navigation Types
 
 ### 1. Stack Navigation (Push/Pop)
 ```swift
 // Push to stack
-navigationService.items.append(.Details(source: .mainScreen))
+navigation.push(.Details(source: .mainScreen))
 
 // Pop from stack
-navigationService.items.removeLast()
+navigation.pop()
 
 // Pop to root
-navigationService.items.removeAll()
+navigation.popToRoot()
 ```
 
 ### 2. Full Screen Presentation
 ```swift
 // Present full screen
-navigationService.fullScreen = .Confirmation(completed: {
+navigation.present(modal: .Confirmation(completed: {
     print("Confirmation completed")
-})
+}))
 
 // Dismiss full screen
-navigationService.fullScreen = nil
+navigation.dismissModal()
 ```
 
 ### 3. Popup Presentation
 ```swift
 // Present popup
-navigationService.popup = .Setup(didFinish: {
+navigation.present(popup: .Setup(didFinish: {
     print("Setup finished")
-})
+}))
 
 // Dismiss popup
-navigationService.popup = nil
+navigation.dismissPopup()
 ```
 
 ### 4. Alert Presentation
 ```swift
 // Show alert
-navigationService.alert = .deleteConfirmation(
+navigation.alert = .defaultAlert(
     yesAction: { print("Deleted") },
     noAction: { print("Cancelled") }
 )
 
 // Dismiss alert
-navigationService.alert = nil
+navigation.alert = nil
 ```
 
 ## Parameter Passing Examples
@@ -720,10 +698,10 @@ navigationService.alert = nil
 ### 1. Simple Data Parameters
 ```swift
 // Passing string ID
-navigationService.items.append(.Edit(itemId: "item123"))
+navigation.push(.Edit(itemID: "item123"))
 
 // Passing enum source
-navigationService.items.append(.List(source: .favorites))
+navigation.push(.List(source: .favorites))
 ```
 
 ### 2. Complex Object Parameters
@@ -734,7 +712,7 @@ let reportData = ReportData(
     timestamp: Date()
 )
 
-navigationService.items.append(.Report(
+navigation.push(.Report(
     data: reportData,
     onSave: { success in
         print("Report saved: \(success)")
@@ -744,30 +722,41 @@ navigationService.items.append(.Report(
 
 ### 3. Completion Handlers
 ```swift
-navigationService.popup = .Setup(didFinish: {
+navigation.present(popup: .Setup(didFinish: { [weak self] in
     // Called when setup is completed
-    self.refreshData()
-    self.navigationService.popup = nil
-})
+    self?.refreshData()
+    self?.navigation.dismissPopup()
+}))
 ```
 
 ### 4. Multiple Parameters
 ```swift
-navigationService.items.append(.Game(
+navigation.push(.Game(
     source: .normal,
     difficulty: .hard
 ))
 ```
 
+### 5. Reading a Module Back
+```swift
+// Modules are stored erased, unwrap them with their own type
+if let details = navigation.items.last?.unwrap(as: DetailsModule.self) {
+    print(details.source)
+}
+```
+
 ## Best Practices
 
 ### 1. Type Safety
-- Use enums for module definitions and source types
-- Leverage Swift's type system to prevent navigation errors
+- Keep parameters as stored properties of the module — they stay checked end to end
+- Keep the `extension Module where Self == ...` next to every module, it is what keeps
+  the whole app navigable from code completion
+- Let the compiler do the bookkeeping: an unbuildable module is a build error, not a
+  crash at runtime
 
 ### 2. Parameter Validation
 - Validate parameters in assembly or interactor
-- Provide default values where appropriate
+- Provide default values in the module initializer where appropriate
 
 ### 3. Memory Management
 - Use weak references in completion handlers when needed
@@ -775,6 +764,7 @@ navigationService.items.append(.Game(
 
 ### 4. Testing
 - Mock NavigationServiceType for unit testing
+- Substitute an assembly with `container.apply( _:)` to build a module with test doubles
 - Test navigation flows with different parameters
 
 ### 5. Documentation

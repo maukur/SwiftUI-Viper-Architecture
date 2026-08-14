@@ -17,5 +17,5 @@ struct MainView: View {
 }
 
 #Preview {
-    ApplicationViewBuilder.stub.build(view: .main)
+    ApplicationViewBuilder.stub.build(module: .Main)
 }

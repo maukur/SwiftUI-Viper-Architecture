@@ -17,11 +17,9 @@ struct RootApp: App {
         let factory = AssemblyFactory()
         let container = DependencyContainer(assemblyFactory: factory)
 
-        // Services
-        container.apply(NavigationAssembly.self)
-
-        // Modules
-        container.apply(MainAssembly.self)
+        // Assemblies resolve to themselves, so registration is only needed to
+        // substitute an implementation, for tests or previews:
+        // container.apply(MockNavigationAssembly.self)
 
         return container
     }()

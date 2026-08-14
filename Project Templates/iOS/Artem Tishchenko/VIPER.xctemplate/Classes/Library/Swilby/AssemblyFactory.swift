@@ -14,19 +14,21 @@ protocol AssemblyFactoryProtocol: AnyObject {
 }
 
 class AssemblyFactory {
-    typealias AssemblyCollection = [String : Any.Type]
+    typealias AssemblyCollection = [String: Any.Type]
     fileprivate var assemblyCollection = AssemblyCollection()
 }
 
 extension AssemblyFactory: AssemblyFactoryProtocol {
     func apply<T: AssemblyType>(_ assembly: T.Type, name: String? = nil) {
         let key = ObjectKey(assembly, name: name).key
-        self.assemblyCollection[key] = assembly
+        assemblyCollection[key] = assembly
     }
-    
+
+    /// An assembly that was never applied resolves to itself, so a new module works
+    /// out of the box and `apply( _:)` is only needed to substitute an implementation,
+    /// for tests or previews.
     func resolve<T: AssemblyType>(_ type: T.Type, name: String? = nil) -> T.Type {
         let key = ObjectKey(type, name: name).key
-        guard let assembly = assemblyCollection[key] else { fatalError("Assemblay '\(String(describing: type))' has't been registered, use 'apply( _:)' method") }
-        return assembly as! T.Type
+        return assemblyCollection[key] as? T.Type ?? type
     }
 }

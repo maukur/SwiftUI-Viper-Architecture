@@ -9,22 +9,23 @@
 import Combine
 import SwiftUI
 
+/// Builds screens out of modules against the application container.
+///
+/// There is no per-module switch here: a `Module` knows how to build itself, so a new
+/// module needs no changes in this file.
 final class ApplicationViewBuilder: Assembly, ObservableObject {
     required init(container: Container) {
         super.init(container: container)
     }
 
     @ViewBuilder
-    func build(view: Views) -> some View {
-        switch view {
-        case .main:
-            buildMain()
-        }
+    func build(module: some Module) -> some View {
+        module.build(container: container)
     }
 
     @ViewBuilder
-    fileprivate func buildMain() -> some View {
-        container.resolve(MainAssembly.self).build()
+    func build(module: AnyModule) -> some View {
+        module.build(container: container)
     }
 }
 

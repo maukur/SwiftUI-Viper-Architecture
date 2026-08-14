@@ -36,9 +36,12 @@
 						<string>Classes/Architecture/PresenterProtocol.swift</string>
 						<string>Classes/Architecture/RouterProtocol.swift</string>
 						<string>Classes/Architecture/ViewStateProtocol.swift</string>
-						
+						<string>Classes/Architecture/Module.swift</string>
+						<string>Classes/Architecture/AnyModule.swift</string>
+
 						<string>Classes/Modules/Main/Contracts/MainContracts.swift</string>
 						<string>Classes/Modules/Main/Assembly/MainAssembly.swift</string>
+						<string>Classes/Modules/Main/Module/MainModule.swift</string>
 						<string>Classes/Modules/Main/View/MainView.swift</string>
 						<string>Classes/Modules/Main/ViewState/MainViewState.swift</string>
 						<string>Classes/Modules/Main/Interactor/MainInteractor.swift</string>
@@ -171,6 +174,28 @@
 				<string>Classes/Architecture/PresenterProtocol.swift</string>
 			</dict>
 
+			<key>Classes/Architecture/Module.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Architecture</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Architecture/Module.swift</string>
+			</dict>
+
+			<key>Classes/Architecture/AnyModule.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Architecture</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Architecture/AnyModule.swift</string>
+			</dict>
+
 <!--END:Architecture-->
 
 <!--MainModule-->
@@ -198,6 +223,19 @@
 				</array>
 				<key>Path</key>
 				<string>Classes/Modules/Main/Assembly/MainAssembly.swift</string>
+			</dict>
+
+			<key>Classes/Modules/Main/Module/MainModule.swift</key>
+			<dict>
+				<key>Group</key>
+				<array>
+					<string>Classes</string>
+					<string>Modules</string>
+					<string>Main</string>
+					<string>Module</string>
+				</array>
+				<key>Path</key>
+				<string>Classes/Modules/Main/Module/MainModule.swift</string>
 			</dict>
 
 			<key>Classes/Modules/Main/View/MainView.swift</key>

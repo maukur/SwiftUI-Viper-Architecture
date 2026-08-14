@@ -13,31 +13,10 @@ final class NavigationService: NavigationServiceType {
     // `Identifiable` requirement stays outside the main actor isolation
     nonisolated let id = UUID()
 
-    @Published var modalView: Views?
-    @Published var popupView: Views?
-    @Published var items: [Views] = []
+    @Published var modalView: AnyModule?
+    @Published var popupView: AnyModule?
+    @Published var items: [AnyModule] = []
     @Published var alert: CustomAlert?
-}
-
-enum Views: Identifiable, Equatable, Hashable {
-    var id: String { stringKey }
-
-    static func == (lhs: Views, rhs: Views) -> Bool {
-        lhs.stringKey == rhs.stringKey
-    }
-
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(stringKey)
-    }
-
-    case main
-
-    var stringKey: String {
-        switch self {
-        case .main:
-            return "main"
-        }
-    }
 }
 
 enum CustomAlert: Equatable, Hashable {
