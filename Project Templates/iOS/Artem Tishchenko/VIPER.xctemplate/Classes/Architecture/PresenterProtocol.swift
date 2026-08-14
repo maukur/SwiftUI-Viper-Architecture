@@ -6,6 +6,6 @@
 //  ___COPYRIGHT___
 //
 
-protocol PresenterProtocol: AnyObject {
-  
-}
+/// Presenter drives the view state, so it lives on the main actor.
+@MainActor
+protocol PresenterProtocol: AnyObject {}

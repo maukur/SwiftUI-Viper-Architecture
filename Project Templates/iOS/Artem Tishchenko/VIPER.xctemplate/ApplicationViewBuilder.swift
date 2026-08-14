@@ -6,14 +6,14 @@
 //  ___COPYRIGHT___
 //
 
+import Combine
 import SwiftUI
 
-final class ApplicationViewBuilder : Assembly, ObservableObject {
-    
+final class ApplicationViewBuilder: Assembly, ObservableObject {
     required init(container: Container) {
         super.init(container: container)
     }
-   
+
     @ViewBuilder
     func build(view: Views) -> some View {
         switch view {
@@ -21,16 +21,14 @@ final class ApplicationViewBuilder : Assembly, ObservableObject {
             buildMain()
         }
     }
-    
+
     @ViewBuilder
     fileprivate func buildMain() -> some View {
         container.resolve(MainAssembly.self).build()
     }
-    
 }
 
 extension ApplicationViewBuilder {
-    
     static var stub: ApplicationViewBuilder {
         return ApplicationViewBuilder(
             container: RootApp().container

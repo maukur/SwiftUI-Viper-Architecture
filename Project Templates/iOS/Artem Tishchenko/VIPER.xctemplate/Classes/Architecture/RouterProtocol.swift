@@ -6,6 +6,6 @@
 //  ___COPYRIGHT___
 //
 
-protocol RouterProtocol: AnyObject {
-   
-}
+/// Router mutates the navigation state, so it lives on the main actor.
+@MainActor
+protocol RouterProtocol: AnyObject {}

@@ -6,6 +6,5 @@
 //  ___COPYRIGHT___
 //
 
-protocol InteractorProtocol: AnyObject {
-    
-}
+/// Interactor holds business logic and is free to run off the main actor.
+protocol InteractorProtocol: AnyObject {}

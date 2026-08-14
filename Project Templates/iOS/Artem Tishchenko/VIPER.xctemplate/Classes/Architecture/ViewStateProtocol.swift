@@ -6,6 +6,6 @@
 //  ___COPYRIGHT___
 //
 
-protocol ViewStateProtocol : AnyObject {
-   
-}
+/// View state is observed by SwiftUI, so it lives on the main actor.
+@MainActor
+protocol ViewStateProtocol: AnyObject {}

@@ -9,17 +9,15 @@
 import SwiftUI
 
 struct ___VARIABLE_moduleName___View: View {
-           
     @StateObject var viewState: ___VARIABLE_moduleName___ViewState
-    
+
     var body: some View {
         Text("Hello iOS")
     }
 }
 
-struct ___VARIABLE_moduleName___Previews: PreviewProvider {
-    static var previews: some View {
-        ApplicationViewBuilder.stub.build(view: .___VARIABLE_moduleName___)
-    }
+// Once the module is registered in `Views` and `ApplicationViewBuilder`,
+// the preview can be switched to `ApplicationViewBuilder.stub.build(view:)`.
+#Preview {
+    ___VARIABLE_moduleName___Assembly(container: RootApp().container).build()
 }
-

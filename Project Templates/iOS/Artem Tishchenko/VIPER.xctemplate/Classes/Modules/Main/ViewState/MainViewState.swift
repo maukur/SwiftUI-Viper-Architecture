@@ -6,13 +6,14 @@
 //  ___COPYRIGHT___
 //
 
+import Combine
 import SwiftUI
 
-final class MainViewState: ObservableObject, MainViewStateProtocol {    
+final class MainViewState: ObservableObject, MainViewStateProtocol {
     private let id = UUID()
     private var presenter: MainPresenterProtocol?
-    
+
     func set(with presener: MainPresenterProtocol) {
-        self.presenter = presener
+        presenter = presener
     }
 }

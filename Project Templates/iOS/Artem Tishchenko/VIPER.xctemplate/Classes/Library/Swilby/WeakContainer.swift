@@ -8,14 +8,19 @@
 
 import Foundation
 
-class WeakContainer<T> {
-    fileprivate weak var _value: AnyObject?
-    var value: T? {
-        set { self._value = newValue as AnyObject }
-        get { return _value as? T }
+/// Holds a weak reference to a boxed object.
+///
+/// Deliberately non-generic: a generic version makes the Swift 6.3 optimizer
+/// crash in `EarlyPerfInliner` while building in Release.
+final class WeakContainer {
+    private weak var _value: AnyObject?
+
+    var value: AnyObject? {
+        get { _value }
+        set { _value = newValue }
     }
-    
-    init(value: T) {
-        self._value = value as AnyObject
+
+    init(value: AnyObject) {
+        _value = value
     }
 }

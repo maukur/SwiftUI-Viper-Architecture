@@ -209,7 +209,6 @@
 	<key>Nodes</key>
 	<array>
 		<string>Info.plist:iPhone</string>
-		<string>Info.plist:UIRequiredDeviceCapabilities:base</string>
 		<string>Info.plist:LaunchScreen</string>
 		<string>Base.lproj/LaunchScreen.storyboard</string>
 	</array>
@@ -218,18 +217,6 @@
 		<key>Info.plist:iPhone</key>
 		<string>&lt;key&gt;LSRequiresIPhoneOS&lt;/key&gt;
 &lt;true/&gt;</string>
-		<key>Info.plist:UIRequiredDeviceCapabilities</key>
-		<dict>
-			<key>Beginning</key>
-			<string>&lt;key&gt;UIRequiredDeviceCapabilities&lt;/key&gt;
-&lt;array&gt;</string>
-			<key>End</key>
-			<string>&lt;/array&gt;</string>
-			<key>Indent</key>
-			<integer>1</integer>
-		</dict>
-		<key>Info.plist:UIRequiredDeviceCapabilities:base</key>
-		<string>&lt;string&gt;armv7&lt;/string&gt;</string>
 		<key>Info.plist:statusBarTintForNavBar</key>
 		<string>&lt;key&gt;UIStatusBarTintParameters&lt;/key&gt;
 &lt;dict&gt;

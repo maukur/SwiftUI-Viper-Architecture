@@ -8,7 +8,7 @@
 
 import Foundation
 
-class ___FILEBASENAME___: Assembly {
+final class ___FILEBASENAME___: Assembly {
     func build() -> ___VARIABLE_serviceName___Type {
         let service = ___VARIABLE_serviceName___()
         return service

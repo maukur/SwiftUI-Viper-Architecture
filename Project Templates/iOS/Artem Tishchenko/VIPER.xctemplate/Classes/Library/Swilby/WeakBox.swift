@@ -9,13 +9,13 @@
 import Foundation
 
 protocol WeakBox: AnyObject {
-    var weakBoxHolder: [String : WeakContainer<AnyObject>] { set get}
+    var weakBoxHolder: [String: WeakContainer] { set get }
 }
 
 extension WeakBox {
     func weakBox<T>(_ configure: () -> T) -> T {
         let key = ObjectKey(T.self).key
-        if let object = self.weakBoxHolder[key]?.value as? T {
+        if let object = weakBoxHolder[key]?.value as? T {
             return object
         }
         let object = configure()
